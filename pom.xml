@@ -8,7 +8,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>BaB</name>
-    <description>Ban and Ban - AntiCheat heuristic (he thong VL) + AntiSpam, ban qua LiteBans</description>
+    <description>Ban and Ban - AntiCheat heuristic (hệ thống VL) + AntiSpam, ban qua LiteBans</description>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -156,13 +156,27 @@
                      dinh keo theo com.guardsquare:proguard-base 7.2.2, ban nay CHI doc duoc
                      bytecode toi Java 18 (class file version 62) - trong khi pom.xml nay bien
                      dich bang Java 21 (class file version 65), gay loi "Unsupported version
-                     number [65.0]". Ghi de len phien ban proguard-base/proguard-core moi hon
-                     (7.4.0+ moi ho tro doc class Java 21) de sua dut diem. -->
+                     number [65.0]". Ghi de len phien ban proguard-base moi hon (7.4.0+ moi ho
+                     tro doc class Java 21) de sua dut diem.
+
+                     FIX #2 (loi that tu log build CI lan sau): chi ghi de proguard-base la
+                     CHUA DU - proguard-base:7.7.0 phu thuoc proguard-core:9.1.10, nhung mot
+                     dependency KHAC trong cay cua chinh proguard-maven-plugin lai keo ve
+                     proguard-core:9.0.1 va "thang" trong qua trinh resolve dependency cua
+                     Maven. proguard-base 7.7.0 goi mot constructor cua ClassReader chi ton
+                     tai tu proguard-core 9.1.x tro len -> chay voi proguard-core 9.0.1 se
+                     bi "NoSuchMethodError" ngay khi ProGuard khoi dong. Phai ghi de CA HAI
+                     (proguard-base VA proguard-core) cho dung cap tuong thich voi nhau. -->
                 <dependencies>
                     <dependency>
                         <groupId>com.guardsquare</groupId>
                         <artifactId>proguard-base</artifactId>
                         <version>7.7.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.guardsquare</groupId>
+                        <artifactId>proguard-core</artifactId>
+                        <version>9.1.10</version>
                     </dependency>
                 </dependencies>
                 <executions>
