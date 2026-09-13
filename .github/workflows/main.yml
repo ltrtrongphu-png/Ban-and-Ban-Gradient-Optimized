@@ -1,0 +1,39 @@
+name: Build Ban and Ban Gradient Optimized
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - profile: paper-1.21.4
+            jarname: BaB-1.21.4
+          - profile: paper-1.21.11
+            jarname: BaB
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven (${{ matrix.profile }})
+        run: mvn -B package --file pom.xml -P ${{ matrix.profile }}
+
+      - name: Upload built jar (${{ matrix.profile }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.jarname }}
+          path: target/${{ matrix.jarname }}.jar
