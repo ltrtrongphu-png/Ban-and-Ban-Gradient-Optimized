@@ -1,0 +1,65 @@
+# =========================================
+#  BaB - Danh sach chu ky hack (Sign Translation Key Check)
+# =========================================
+#
+# CO CHE: server gui mot tam bien (sign) "ao" chua translation key ma chi client
+# co cai mod hack tuong ung moi tu dich duoc thanh chu that (vi mod tu dang ky key
+# do de hien thi ten phim tat trong menu Controls cua no). Client gui lai noi dung
+# da dich cho server - neu khac voi key goc, gan nhu chac chan client co cai mod do.
+#
+# Day la ky thuat DOC GOI TIN (packet-level), CAN CAI PROTOCOLLIB moi hoat dong.
+# Neu server khong co ProtocolLib, tinh nang nay se tu dong bi vo hieu hoa (an toan,
+# khong crash plugin).
+#
+# Moi dong: <id-noi-bo>: { display: "<Ten hien thi>", key: "<1 key>" }  HOAC
+#           <id-noi-bo>: { display: "<Ten hien thi>", keys: ["<key1>", "<key2>", ...] }
+# Dung "keys" (nhieu key) khi biet mod do dang ky NHIEU translation key - chi
+# can 1 trong so do khop la du de flag, tang do bao phu neu 1 key bi doi/xoa
+# o ban cap nhat sau cua mod.
+signatures:
+  meteor-client:
+    display: "Meteor Client"
+    # 2 key duoi day da duoc XAC MINH TRUC TIEP tu file assets/meteor-client/lang/en_us.json
+    # that trong ban mod nguon mo (GPL-3.0) - khong doan mo.
+    keys:
+      - "key.meteor-client.open-gui"
+      - "key.meteor-client.open-commands"
+  wurst:
+    display: "Wurst Client"
+    key: "key.wurst.zoom"
+  liquidbounce:
+    display: "LiquidBounce"
+    key: "liquidbounce.module.killaura.name"
+  freecam:
+    display: "Freecam"
+    key: "key.freecam.toggle"
+  xray-fabric:
+    display: "XRay (Fabric)"
+    key: "xray.config.toggle"
+  chestesp:
+    display: "ChestESP"
+    key: "key.chestesp.toggle"
+  killaura-fabric:
+    display: "KillAura (Fabric)"
+    key: "key.killaura"
+  autofish:
+    display: "AutoFish"
+    key: "key.autofish.open_gui"
+  bleachhack:
+    display: "BleachHack"
+    key: "bleachhack.module.killaura"
+  aristois:
+    display: "Aristois"
+    key: "emc.module.killaura.name"
+  world-downloader:
+    display: "World Downloader"
+    key: "key.wdl.startStop"
+  autoclicker-fabric:
+    display: "AutoClicker (Fabric)"
+    key: "autoclicker-fabric.hud.holding"
+  impact:
+    display: "Impact Client"
+    key: "key.impact.open-clickgui"
+  rusherhack:
+    display: "RusherHack"
+    key: "rusherhack.key.open-clickgui"

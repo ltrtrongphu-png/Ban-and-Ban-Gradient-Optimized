@@ -1,0 +1,373 @@
+# =========================================
+#  BaB (Ban and Ban) - Config
+# =========================================
+#
+# QUAN TRONG - DOC TRUOC KHI DUNG:
+# - Khong co plugin nao "quet mod client" duoc that su, vi giao thuc Minecraft khong
+#   gui danh sach mod ve server. AntiCheat o day hoat dong bang cach phan tich HANH VI
+#   (toc do di chuyen, khoang cach danh, so lan click/giay...) - giong cach cac
+#   AntiCheat that (Grim, Vulcan, Matrix...) hoat dong, nhung don gian hon nhieu.
+# - LUON co ty le bao sai (false positive), dac biet voi lag/mang yeu. Hay theo doi
+#   log console va lenh /bab vl <player> thuong xuyen de dieu chinh nguong cho phu hop
+#   truoc khi tin tuong hoan toan vao auto-ban.
+# - client-brand chi la CANH BAO tham khao (client hack de dang gia mao), KHONG auto-ban.
+settings:
+  ban-duration: "30d"      # Dinh dang thoi gian tuy theo plugin ban ban dung (vd 30d, 12h, 7d12h...)
+  # Lenh console goi plugin ban. %player% / %duration% / %reason% se duoc thay the.
+  ban-command: "ban %player% %duration% %reason%"
+  # Ten CHINH XAC cua plugin ban dang dung (xem trong /plugins hoac ten file jar)
+  ban-plugin-name: "LightBans"
+  # true = bat buoc phai tim thay plugin ban-plugin-name moi cho ban chay lenh ban (an toan hon)
+  # false = luon chay lenh ban-command du khong tim thay plugin nao (dung neu lenh /ban la lenh vanilla/console tuy chinh)
+  require-ban-plugin: true
+  alert-permission: "bab.alerts"
+# =========================================
+# ANTICHEAT - He thong tich diem vi pham (Violation Level)
+# =========================================
+anticheat:
+  enabled: true
+  # Neu 1 nguoi choi khong vi pham them trong X giay, tru bot diem (tranh phat oan
+  # do 1 lan lag/giat hinh don le).
+  violation-decay-seconds: 60
+  violation-decay-amount: 5
+  ban-reason: "AntiCheat: nghi ngo su dung hack (%check%, VL: %vl%)"
+  # Bu tru TPS/lag (tham khao tu ban premium): khi server lag (TPS tut), tu dong
+  # giam trong so cong diem cua MOI check cung luc, tranh bat oan hang loat nguoi
+  # choi khi server khong theo kip, khong phai vi ho dung hack.
+  tps-compensation:
+    enabled: true
+    min-tps: 10.0      # TPS thap nhat duoc tinh (duoi muc nay khong giam them nua, tranh vo hieu hoa hoan toan anticheat)
+    max-factor: 3.0     # He so giam toi da (o TPS=10 se giam ~2x, o min-tps se giam toi da max-factor lan)
+  # Tin nhan dung cho he thong phat leo thang (chi ap dung cho check nao co khai
+  # bao "escalation:" trong phan checks ben duoi - xem vi du o check "speed").
+  escalation-messages:
+    kick: "&cBan bi kick do nghi ngo su dung hack (%check%). Lan sau se bi ban."
+  checks:
+    speed:
+      enabled: true
+      weight: 20               # Diem cong moi lan phat hien (nang de bat nhanh theo yeu cau)
+      ban-threshold: 60         # ~3 lan phat hien la du nguong ban
+      # NANG CAP: gio da mo hinh rieng theo loai khoi duoi chan (bang, soul sand,
+      # slime...) trong code (xem MovementCheck.computeMaxSpeedPerSecond), nen he
+      # so chung o day co the SIET CHAT hon truoc (1.15 thay vi 1.35) ma khong tang
+      # bao sai cho nguoi choi tren bang - ket qua bat duoc hack toc do nhe hon.
+      max-speed-multiplier: 1.15
+      grace-ticks-after-teleport: 40   # Mien kiem tra sau khi teleport (2 giay)
+      grace-ticks-after-damage: 20     # Mien kiem tra sau khi bi danh/knockback (1 giay)
+      # VI DU he thong phat leo thang (tuy chon, tham khao tu ban premium): thay vi
+      # ban thang khi du nguong, lan luot ap dung tung hanh dong trong danh sach nay
+      # (lan 1 -> notify, lan 2 -> kick, lan 3 -> tempban 1 gio, lan 4 tro di -> ban han).
+      # Xoa hoac de trong dong nay de quay ve hanh vi cu (ban thang khi du nguong).
+      # escalation: 'notify,kick,tempban:1h,ban'
+    flight:
+      enabled: true
+      weight: 30
+      ban-threshold: 60         # 2 lan phat hien la du nguong ban
+      # NANG CAP: gio day max-airborne-ticks nghia la "so tick LIEN TIEP lech khoi
+      # duong roi tu do du doan" (khong phai tong so tick lo lung nhu ban cu) - vi
+      # da doi sang mo hinh du doan vat ly (xem javadoc MovementCheck.checkFlight),
+      # 6 tick (~0.3s) lech lien tuc la du dang tin cay, KHONG can cho toi 1.5s
+      # nhu ban cu (van con phat hien duoc, chi cham hon va de bo lot hack ngan).
+      max-airborne-ticks: 6
+      vertical-tolerance: 0.03  # Sai so cho phep (o/tick) giua Y thuc te va Y du doan truoc khi tinh la lech
+    killaura:
+      enabled: true
+      weight: 20
+      ban-threshold: 60
+      max-reach: 4.2            # Khoang cach danh toi da hop ly (vanilla ~3, buffer them do lag)
+    autototem:
+      # MOI (tu phan tich module list cua Meteor Client - client hack ma nguon mo).
+      enabled: true
+      weight: 25
+      ban-threshold: 50
+      min-refill-ms: 80   # Thoi gian toi thieu nap lai totem tay trai; con nguoi that can toi thieu ~100-150ms
+    multiaura:
+      # NANG CAP MOI: danh trung 2 THUC THE KHAC NHAU trong khoang thoi gian rat
+      # ngan (xem javadoc KillAuraCheck.checkMultiAura). Tu dong tru sweep attack.
+      enabled: true
+      weight: 25
+      ban-threshold: 50
+      min-interval-ms: 100
+    autoclicker:
+      enabled: true
+      weight: 15
+      ban-threshold: 60
+      max-cps: 22                # CPS vuot nguong nay lien tuc la bat thuong (nguoi thuong ~10-14 CPS)
+      sample-window-ms: 1000
+    autoclicker-timing:
+      # NANG CAP MOI: bat macro/autoclicker giu CPS DUOI nguong flat o tren nhung
+      # click qua DEU ve thoi gian (xem javadoc KillAuraCheck.checkClickTimingUniformity).
+      enabled: true
+      weight: 20
+      ban-threshold: 60
+      min-samples: 10
+      min-cps: 9.0
+      max-coefficient-of-variation: 0.08   # Con nguoi click nhanh van co CV > ~0.12-0.2 do run tay
+    fastbreak:
+      enabled: true
+      weight: 15
+      ban-threshold: 60
+      min-break-interval-ms: 50  # Khoang cach toi thieu giua 2 lan pha block (chong nuker)
+    nofall:
+      enabled: true
+      weight: 20
+      ban-threshold: 60
+      min-fall-distance: 3.5    # So block roi toi thieu de bat dau theo doi (duoi muc nay vanilla khong bi damage)
+    timer:
+      enabled: true
+      weight: 25
+      ban-threshold: 250         # ~10 lan phat hien moi du nguong ban (tang tu 60 - van co the bao sai theo lag/jitter mang)
+      max-moves-per-second: 30  # Vanilla ~20-22 goi di chuyen/giay, buffer them cho lag/jitter
+    rotation:
+      enabled: true
+      weight: 25
+      ban-threshold: 60          # ~3 lan la du - kiem tra pitch bat hop le
+    # NANG CAP: check moi thay the logic GCD cu (da bi vo hieu vi bao sai) bang
+    # thuat toan phuong sai - xem javadoc RotationCheck.checkRotationUniformity.
+    # Phat hien xoay camera NHANH nhung QUA DEU (dau hieu aim-assist/noi suy),
+    # KHONG flag nguoi choi chi xoay nhanh binh thuong (co rung tu nhien).
+    rotation-uniformity:
+      enabled: true
+      weight: 25
+      ban-threshold: 50
+      min-avg-deg-per-tick: 3.0        # Chi xet khi dang xoay đủ nhanh (do/tick trung binh trong cua so)
+      max-coefficient-of-variation: 0.15  # Cang thap cang "deu" bat thuong; nguoi that thuong > 0.2-0.3
+    scaffold:
+      enabled: true
+      weight: 20
+      ban-threshold: 200         # ~10 lan phat hien moi du nguong ban (tang tu 60 - da bo check goc nhin, chi con check toc do dat block)
+      max-angle: 75.0             # (Khong con duoc dung - logic goc nhin da bi bo do gay bao sai voi hanh vi bac cau binh thuong)
+      min-place-interval-ms: 40   # Khoang cach toi thieu giua 2 lan dat block
+    knockback:
+      enabled: true
+      weight: 20
+      ban-threshold: 240         # ~12 lan phat hien moi du nguong ban (tang tu 60 - van co the bao sai trong PVP goc tuong/hanh lang hep)
+      velocity-check-delay-ticks: 1   # SUA: doc van toc 1 tick sau khi trung don (thay vi do vi tri sau 4-6 tick, de tranh bi input W cua nguoi choi lam sai lech)
+      min-velocity: 0.03              # SUA: van toc ngang toi thieu duoc coi la co nhan knockback (thay the min-displacement)
+    fastuse:
+      enabled: true
+      weight: 20
+      ban-threshold: 60
+      min-interval-ms: 1200        # Vanilla an mat ~1600ms, de buffer thap hon mot chut tranh bao sai do lag
+    invaction:
+      enabled: true
+      weight: 40                   # Van co the bao sai do do tre mang - da them close-grace-ms de giam
+      ban-threshold: 200            # KHOI PHUC: 60 -> 200 (~5 lan) - da bi revert nguoc trong ban merge nay
+      close-grace-ms: 300           # Bo qua check trong 300ms sau khi dong GUI (tranh loi thoi diem do mang)
+    noslow:
+      enabled: true
+      weight: 20
+      ban-threshold: 200          # ~10 lan phat hien moi du nguong ban (tang tu 60 - chi con kiem tra luc chan khien)
+      max-speed: 3.0                # Toc do ngang toi da (block/giay) khi dang chan khien
+    invalidpacket:
+      enabled: true
+      weight: 100                   # Trong so rat cao - day la dau hieu GAN NHU CHAC CHAN, khong phai suy doan
+      ban-threshold: 100             # Chi can 1 lan la du nguong ban - client vanilla khong bao gio gui gia tri nay
+    xray:
+      enabled: true
+      weight: 15                    # KHONG CON DUOC SU DUNG - xray gio chi ghi log/canh bao Staff, khong con cong VL/anh huong ban
+      ban-threshold: 60              # KHONG CON DUOC SU DUNG - giu lai gia tri chi de tham khao
+      # NANG CAP: so khoi toi thieu da dao trong phien truoc khi hien ty le
+      # quang-an/tong-khoi trong canh bao staff (duoi muc nay, ty le chua du
+      # tin cay thong ke nen chi ghi "chua du du lieu").
+      min-blocks-for-ratio: 200
+    noclip:
+      enabled: true
+      weight: 30
+      ban-threshold: 60
+      required-ticks: 3              # So tick lien tiep phai o trong khoi dac moi tinh la vi pham (giam bao sai do lag)
+    packetflood:
+      # Check MOI dua tren PacketEvents (xem com.example.bab.packetevents.PacketFloodCheck).
+      enabled: true
+      weight: 15
+      ban-threshold: 60
+      max-packets-per-second: 40     # Vanilla ~20/giay (1 goi/tick); nguong 40 de tranh bao sai khi lag/giat mang
+    containerreach:
+      enabled: true
+      weight: 25
+      ban-threshold: 60
+      max-distance: 6.0              # Khoang cach toi da (block) hop ly de mo container (vanilla reach ~4.5-5)
+    # ===== Cac check moi ghep tu ban premium (da so sanh ky, chon phien ban an toan hon) =====
+    spider:
+      enabled: true
+      weight: 25
+      ban-threshold: 100
+      required-ticks: 4               # So tick lien tiep phai "bam tuong di len" moi tinh la vi pham
+      natural-jump-ticks: 12           # MOI: bo qua hoan toan trong X tick dau tren khong (1 cu nhay binh thuong)
+    step:
+      enabled: true
+      weight: 20
+      ban-threshold: 100
+      min-height: 0.85                 # Do cao buoc len (block) toi thieu de nghi ngo (vanilla tu dong buoc toi da ~0.6)
+      max-velocity-y: 0.15             # Van toc Y toi da luc do de van tinh la "khong nhay that"
+      required-streak: 2               # So lan lien tiep moi tinh la vi pham
+    aimassist:
+      enabled: true
+      weight: 30
+      ban-threshold: 100
+      min-snap-degrees: 35.0           # Do lech goc yaw toi thieu giua 2 tick de tinh la "nhay giat"
+      alignment-dot: 0.97              # Do khop voi muc tieu sau khi nhay (1.0 = hoan hao, cang gan 1 cang chinh xac)
+    impossiblehit:
+      enabled: true
+      weight: 35
+      ban-threshold: 100
+      max-negative-dot: -0.1           # Nguong am - duoi muc nay (nhin lech qua xa) moi tinh la bat thuong
+    autoarmor:
+      enabled: true
+      weight: 20
+      ban-threshold: 100
+      min-interval-ms: 150             # Khoang cach toi thieu giua 2 lan doi giap
+      required-count: 3                # So lan doi giap nhanh lien tiep moi tinh la vi pham
+    blockreach:
+      enabled: true
+      weight: 25
+      ban-threshold: 100
+      max-distance: 6.0                # Khoang cach toi da hop ly cho MOI loai tuong tac block (rong hon containerreach)
+    fastinteract:
+      enabled: true
+      weight: 15
+      ban-threshold: 100
+      window-ms: 1000
+      max-per-window: 15                # So lan tuong tac toi da/giay truoc khi bi nghi ngo
+    noswing:
+      enabled: true
+      weight: 30
+      ban-threshold: 100
+      max-gap-ms: 250                   # Khoang cach toi da (ms) giua swing va attack, tinh CA 2 CHIEU (truoc/sau)
+      verdict-delay-ticks: 3            # MOI: cho bao nhieu tick sau attack roi moi ket luan (bu tru goi tin swing den muon)
+# =========================================
+# RAID ALERT - CHI CANH BAO, KHONG TU DONG PHAT
+# =========================================
+# Ghi log/canh bao khi nguoi choi dung yen bat thuong lau roi mo ender chest/shulker
+# ngay lap tuc - CO THE la dau hieu FreeCam/ESP nhung KHONG CHAC CHAN (co the chi la
+# doc chat, alt-tab...). Day la cong cu HO TRO DIEU TRA cho staff, tuyet doi khong
+# nen dung de tu dong ket luan hay phat nguoi choi.
+    raidalert:
+      enabled: true
+      idle-threshold-seconds: 20     # Dung yen tu bao nhieu giay tro len moi tinh la bat thuong
+# =========================================
+# REPLAY - "May ghi hinh" thay the video (vi tri + goc nhin, KHONG PHAI video that)
+# =========================================
+# Tu dong ghi lai 20 giay gan nhat cua moi nguoi choi (rolling buffer). Khi ai do
+# bi flag, doan ghi duoc luu lai de staff xem qua lenh /bab replay <player>.
+# The gioi luc phat lai la HIEN TAI, khong phai qua khu - chi thay vi tri/goc nhin,
+# khong thay block da thay doi.
+replay:
+  enabled: true
+  sample-interval-ticks: 4     # Lay mau moi 4 tick (~5 lan/giay) - giam de nhe hon, tang de muot hon
+  buffer-seconds: 20            # Do dai doan ghi lien tuc truoc khi bi flag (rolling buffer trong RAM)
+  max-clips-per-player: 10      # So doan ghi toi da luu trong DB cho moi nguoi choi (cu nhat bi xoa khi day)
+  retention-days: 14            # Tu dong xoa het doan ghi cu hon X ngay (don dep dinh ky moi 6 tieng)
+# =========================================
+# CLIENT BRAND - CHI CANH BAO, KHONG AUTO-BAN
+# =========================================
+client-brand:
+  suspicious-brands:
+    - wurst
+    - impact
+    - sigma
+    - aristois
+    - future
+    - inertia
+    - salhack
+    - liquidbounce
+    - meteor
+    - rusherhack
+# =========================================
+# ANTISPAM
+# =========================================
+antispam:
+  enabled: true
+  max-messages: 5      # Qua 5 tin nhan trong window-ms se bi ban ngay
+  window-ms: 1000       # 1 giay
+  ban-duration: "30d"
+  ban-reason: "AntiSpam: gui tin nhan qua nhanh (spam)"
+# =========================================
+# VERIFICATION - Xac minh nguoi that/bot bang the gioi limbo (hu khong)
+# =========================================
+# QUAN TRONG: chi loc duoc bot don gian (spam-connect/flood ket noi). Bot "thong
+# minh" gia lap chuyen dong van co the vuot qua. Day KHONG PHAI cong cu phat hien
+# hack cho nguoi choi that - do la viec cua phan "anticheat" o tren.
+verification:
+  enabled: true
+  world-name: "bab_limbo"
+  platform-size: 7          # Kich thuoc san (block) de nguoi choi di chuyen trong luc xac minh
+  timeout-seconds: 25        # KHOI PHUC: 15 -> 25 (tranh kick oan do lag/client load chunk cham)
+  min-move-distance: 3.0     # Tong khoang cach (block) toi thieu can di chuyen de xac minh
+  real-spawn-world: ""       # De trong = dung spawn cua world dau tien trong server
+  max-joins-per-ip-per-minute: 6   # Qua nguong nay tu cung 1 IP se bi tu choi ket noi (chong flood)
+  skip-if-already-verified: true    # true = nguoi choi da tung xac minh thanh cong se duoc bo qua vinh vien
+  messages:
+    title: "&eXác Minh"
+    subtitle: "&7Di chuyển để xác minh bạn là người thật"
+    actionbar: "&7Hãy di chuyển xung quanh..."
+    kick-timeout: "&cBạn không xác minh kịp thời gian. Vui lòng kết nối lại."
+    kick-suspected-bot: "&cKết nối bị từ chối (nghi ngo bot)."
+# =========================================
+# HACKCHECK - BaB tu quet mod hack (ky thuat Sign Translation Key)
+# =========================================
+# !!! DANG TAT (enabled: false) DO KHONG ON DINH !!!
+# Sau nhieu lan sua, ky thuat tu quet nay van co truong hop bao sai. Khuyen nghi:
+# dung plugin CheckHacks rieng (da kiem chung hoat dong dung) va bat
+# CHECKHACKS-BRIDGE o duoi thay vi bat lai muc nay.
+hackcheck:
+  enabled: false                 # Cong tac tong - dat true de bat lai TU QUET cua BaB (khong khuyen nghi)
+  timeout-ticks: 30              # So tick cho toi da 1 dot quet (4 chu ky) truoc khi chuyen tiep
+  auto-check-on-join:
+    enabled: false               # Bat = tu dong quet moi nguoi choi sau khi vao server (chi co tac dung neu enabled: true o tren)
+  # He thong xu ly khi phat hien hack (dung chung boi ca tu quet LAN CheckHacksBridge):
+  # Lan vi pham dau tien (strikes = 1) -> chi KICK, canh bao truoc.
+  # Tai pham (strikes >= 2) -> BAN theo ban-duration ben duoi.
+  # So lan vi pham duoc luu vao database (bab.db), khong mat khi restart server.
+  punishment:
+    kick-message: "&cPhat hien su dung mod hack (%hacks%).\n&7Day la canh bao LAN 1 - lan sau se bi BAN."
+    ban-duration: "30d"
+    ban-reason: "Su dung client hack (%hacks%) - tai pham"
+    reset-strikes-after-ban: true   # true = sau khi ban xong, tinh lai tu dau (lan vi pham tiep theo se lai la lan 1)
+# =========================================
+# CHECKHACKS BRIDGE - Noi voi plugin CheckHacks co san (KHUYEN NGHI DUNG THAY THE hackcheck o tren)
+# =========================================
+# BaB "lang nghe" console log cua plugin CheckHacks (doc lap, khong phai BaB viet)
+# va tu dong ap dung he thong kick lan 1/ban lan 2 o tren len ket qua CheckHacks
+# bao ve. AN TOAN vi chi doc du lieu, khong gui goi tin/mo GUI gi.
+checkhacks-bridge:
+  enabled: true
+# =========================================
+# TIN NHAN
+# =========================================
+messages:
+  alert-format: "&c[BaB] &e%player% &7bi nghi ngo (&c%check%&7) - VL: &c%vl%&7/&c%threshold%"
+  ban-broadcast: "&4[BaB] &c%player% &7da bi BAN vi &c%reason%"
+# =========================================
+# ANTIFREECAM - Mu tam thoi khi dao sau (tham khao tu 1 plugin premium)
+# =========================================
+# Y TUONG: KHONG co gang "phat hien" FreeCam/ESP (ve nguyen tac bat kha thi qua
+# goi tin - da giai thich nhieu lan). Thay vao do "PHA" gia tri cua no: ap hieu
+# ung Blindness (mu tam thoi) THAT SU len nguoi choi khi ho o do sau nhat dinh.
+# Vi Blindness la hieu ung che man hinh o tang render cua client, camera FreeCam
+# (chi tach roi goc nhin, khong tat hieu ung man hinh) cung bi mu theo.
+#
+# KHONG phat oan ai (chi la debuff vanilla binh thuong, khong cham VL, khong ban).
+#
+# !!! CAN THAN KHI BAT !!! - se anh huong CA nguoi choi dao ham binh thuong (rat
+# pho bien, khong lien quan raid). MAC DINH TAT. Neu bat, nen thu nghiem ky va
+# de nguong do sau that thap (gan bedrock) truoc khi mo rong.
+antifreecam:
+  enabled: false
+  y-threshold: -58                # Chi ap dung khi nguoi choi o do cao <= gia tri nay
+  check-interval-seconds: 5        # Kiem tra lai moi X giay
+  blindness-duration-seconds: 4    # Do dai 1 lan ap hieu ung (lap lai moi lan check neu van con o do sau)
+# =========================================
+# ESP-PROTECTION - Che khoi nhay cam (quang quy, ruong, spawner...) khoi goi tin
+# =========================================
+# LOP PHONG VE BO SUNG cho antifreecam o tren (KHONG thay the). Xem javadoc cua
+# com.example.bab.esp.EspProtectionManager de biet gioi han: hien tai chi che
+# duoc goi tin BLOCK_CHANGE (khoi thay doi trong luc dang online), CHUA rewrite
+# duoc toan bo du lieu chunk ban dau (MAP_CHUNK) - can 1 plugin AntiXray chuyen
+# dung (vi du Orebfuscator) neu can chan X-ray tu luc chunk vua tai.
+esp-protection:
+  enabled: false
+  enter-hide-y: 30      # Xuong duoi muc nay moi BAT che do an (hysteresis)
+  exit-hide-y: 36        # Phai len tren muc nay moi TAT che do an (cao hon enter-hide-y de tranh nhap nhay)
+  fake-block: "DEEPSLATE" # Ten Material (Bukkit) dung de thay the khoi nhay cam
+  debug: false

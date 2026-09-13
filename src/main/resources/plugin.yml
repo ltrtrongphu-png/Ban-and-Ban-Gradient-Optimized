@@ -1,0 +1,23 @@
+name: BaB
+version: '1.0.0'
+main: com.example.bab.BaB
+api-version: '1.21'
+author: YourName
+description: Ban and Ban - AntiCheat heuristic (he thong VL) + AntiSpam, ban qua LiteBans
+softdepend: [LiteBans, AdvancedBan, LightBan, ProtocolLib]
+# PacketEvents duoc SHADE (dong goi) truc tiep vao jar cua BaB (xem pom.xml), nen
+# KHONG can khai bao no o day nhu 1 plugin server rieng - no la 1 thu vien noi bo.
+commands:
+  bab:
+    description: Lenh quan tri BaB
+    usage: /bab <vl|exempt|reset|reload>
+permissions:
+  bab.admin:
+    description: Quyen dung lenh /bab
+    default: op
+  bab.alerts:
+    description: Nhan canh bao vi pham/ban tu BaB
+    default: op
+  bab.bypass:
+    description: Duoc mien kiem tra AntiCheat/AntiSpam (dung cho Staff test)
+    default: false
